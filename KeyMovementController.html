@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movement Control</title>
+
+    <style>
+        *{
+            margin: 0;
+            overflow: hidden;
+            background-color: black;
+        }
+        canvas{
+            margin-top: 9.06vh ;
+            background-color: rgb(20, 19, 19);
+            border-top-width: 1px;
+            border-top-color: azure;
+            border-top-style: solid;
+        }
+        a{
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            top: 1.5vh;
+            left: 20px;
+            width: 120px;
+            height: 45px;
+            border-radius: 50px;
+            border: none;
+            font-size: large;
+            font-weight: 900;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: rgb(138, 39, 113);
+            background-color: rgb(34, 22, 54);
+            cursor: pointer;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+    <a href="" draggable="false">RESET</a>
+    <canvas></canvas>
+
+    <script>
+      const canvas = document.querySelector('canvas')
+
+      const width = window.innerWidth;
+      const height = window.innerHeight/1.1;
+
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext('2d')
+      ctx.fillStyle = 'rgba(0, 0, 4,0.5)';
+      ctx.fillRect(0,0,width,height);
+
+      class Ball{
+          constructor(x, y, velx, vely, size, color){
+            this.x = x;
+            this.y = y;
+            this.velx = velx;
+            this.vely = vely;
+            this.size = size;
+            this.color = color; 
+          }
+          drawBall(){
+            ctx.beginPath();
+            ctx.fillStyle = this.color;
+            ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
+            ctx.fill();
+          }
+          updateBall(){
+            this.x += this.velx;
+            this.y += this.vely;
+
+            if (this.x + this.size > width || this.x - this.size < 0) {
+              this.velx = -this.velx;
+            }
+            
+            if (this.y + this.size > height || this.y - this.size < 0) {
+              this.vely = -this.vely;
+            }
+          }
+      }
+
+      function random(min, max){
+        const num = Math.floor(Math.random() * (max - min +1)) + min;
+        return num;
+      }
+
+      const ball = new Ball(
+        width / 2,
+        height / 2,
+        0,
+        0,
+        50,
+        `rgb(${random(0, 255)},${random(0, 255)},${random(0, 255)})`
+      );
+
+      function handleKeydown(event) {
+        if (event.code === "ArrowLeft" || event.code === "KeyA") {
+          ball.velx = -5;
+          console.log(event);
+        } else if (event.code === "ArrowRight" || event.code === "KeyD") {
+          ball.velx = 5;
+        } else if (event.code === "ArrowUp" || event.code === "KeyW") {
+          ball.vely = -5;
+        } else if (event.code === "ArrowDown" || event.code === "KeyS") {
+          ball.vely = 5;
+        }
+      }
+
+      function handleKeyup(event) {
+        if (event.code === "ArrowLeft" || event.code === "ArrowRight" || event.code === "KeyA" || event.code === "KeyD") {
+          ball.velx = 0;
+        }
+        if (event.code === "ArrowUp" || event.code === "ArrowDown" || event.code === "KeyW" || event.code === "KeyS") {
+          ball.vely = 0;
+        }
+      }
+
+      function moveBall() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ball.updateBall();
+        ball.drawBall();
+        requestAnimationFrame(moveBall);
+      }
+
+      document.addEventListener("keydown", handleKeydown);
+      document.addEventListener("keyup", handleKeyup);
+
+      moveBall();
+    </script>
+</body>
+</html>
